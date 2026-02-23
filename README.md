@@ -6,14 +6,14 @@ How to build:
 
 - clone this project
 - run `cd tools/docker/NetBeans`
-- run 'wget https://archive.apache.org/dist/netbeans/netbeans/12.6/netbeans-12.6-bin.zip'
+- run `wget https://archive.apache.org/dist/netbeans/netbeans/12.6/netbeans-12.6-bin.zip`
 - run `./build.sh`
 - run `./build-state.js`
-- run 'cp split.sh ../../../images/split.sh'
+- run `cp split.sh ../../../images/split.sh`
 - run `cd ../../../images`
-- run './split.sh'
-- run 'rm debian-9p-rootfs.tar debian-state-base.bin'
-- run 'cd ..'
+- run `./split.sh`
+- run `rm debian-9p-rootfs.tar debian-state-base.bin`
+- run `cd ..`
 - run `make run`
 
   This should start a server on 8000 (or other ports).
