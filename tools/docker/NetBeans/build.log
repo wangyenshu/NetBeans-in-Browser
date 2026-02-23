@@ -1,0 +1,104 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 4.15kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/i386/debian:bookworm-slim
+#2 DONE 2.6s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [ 1/21] FROM docker.io/i386/debian:bookworm-slim@sha256:07554f95cf016fae6abe3bf4730899821dc4bbf27660eafad852bb8610a9037c
+#4 DONE 0.0s
+
+#5 [ 5/21] RUN apt-get update &&     apt-get install -y --no-install-recommends     xserver-xorg-core xserver-xorg-video-fbdev xinit fluxbox     xserver-xorg-input-mouse xserver-xorg-input-kbd xserver-xorg-input-evdev     libxext6 libxrender1 libxtst6 libxi6 libx11-xcb1 libxrender-dev     libfontconfig1 fonts-dejavu-core     wget tar ca-certificates xterm unzip     && rm -rf /var/lib/apt/lists/*
+#5 CACHED
+
+#6 [ 2/21] WORKDIR /root/build
+#6 CACHED
+
+#7 [ 3/21] RUN rm -f /etc/apt/sources.list.d/* &&     echo "deb http://mirrors.ustc.edu.cn/debian/ bookworm main contrib non-free non-free-firmware\n    deb http://mirrors.ustc.edu.cn/debian/ bookworm-updates main contrib non-free non-free-firmware\n    deb http://mirrors.ustc.edu.cn/debian/ bookworm-backports main contrib non-free non-free-firmware\n    deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware" > /etc/apt/sources.list &&     apt-get update &&     apt-get install -y --no-install-recommends     linux-image-686     systemd-sysv     locales     libterm-readline-perl-perl     && rm -rf /var/lib/apt/lists/*
+#7 CACHED
+
+#8 [ 4/21] RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen &&     locale-gen &&     echo 'LANG="en_US.UTF-8"' > /etc/default/locale &&     chsh -s /bin/bash root
+#8 CACHED
+
+#9 [ 6/21] RUN wget -qO /tmp/jdk.tar.gz "https://download.bell-sw.com/java/11.0.21+10/bellsoft-jdk11.0.21+10-linux-i586.tar.gz" &&     mkdir -p /opt/jdk &&     tar -xzf /tmp/jdk.tar.gz -C /opt/jdk --strip-components=1 &&     rm /tmp/jdk.tar.gz
+#9 CACHED
+
+#10 [internal] load build context
+#10 transferring context: 432.90MB 1.1s done
+#10 DONE 1.1s
+
+#11 [ 7/21] COPY netbeans-12.6-bin.zip /tmp/netbeans.zip
+#11 DONE 8.1s
+
+#12 [ 8/21] RUN unzip -q /tmp/netbeans.zip -d /opt/ &&     rm /tmp/netbeans.zip &&     sed -i 's|#netbeans_jdkhome="/path/to/jdk"|netbeans_jdkhome="/opt/jdk"|g' /opt/netbeans/etc/netbeans.conf
+#12 DONE 10.4s
+
+#13 [ 9/21] RUN passwd -d root &&     sed -i 's/nullok_secure/nullok/' /etc/pam.d/common-auth
+#13 0.293 passwd: password changed.
+#13 DONE 0.3s
+
+#14 [10/21] COPY getty-noclear.conf getty-override.conf /etc/systemd/system/getty@tty1.service.d/
+#14 DONE 0.1s
+
+#15 [11/21] COPY getty-autologin-serial.conf /etc/systemd/system/serial-getty@ttyS0.service.d/
+#15 DONE 0.1s
+
+#16 [12/21] RUN systemctl enable serial-getty@ttyS0.service
+#16 0.235 Created symlink /etc/systemd/system/getty.target.wants/serial-getty@ttyS0.service → /lib/systemd/system/serial-getty@.service.
+#16 DONE 0.3s
+
+#17 [13/21] RUN systemctl disable systemd-timesyncd.service &&     systemctl disable apt-daily.timer &&     systemctl disable apt-daily-upgrade.timer
+#17 0.246 Failed to disable unit, unit systemd-timesyncd.service does not exist.
+#17 0.250 Removed "/etc/systemd/system/timers.target.wants/apt-daily.timer".
+#17 0.253 Removed "/etc/systemd/system/timers.target.wants/apt-daily-upgrade.timer".
+#17 DONE 0.3s
+
+#18 [14/21] RUN printf '%s\n' 9p 9pnet 9pnet_virtio virtio virtio_ring virtio_pci | tee -a /etc/initramfs-tools/modules
+#18 0.248 9p
+#18 0.248 9pnet
+#18 0.248 9pnet_virtio
+#18 0.248 virtio
+#18 0.248 virtio_ring
+#18 0.248 virtio_pci
+#18 DONE 0.3s
+
+#19 [15/21] RUN echo '#!/bin/sh' > /etc/initramfs-tools/scripts/boot-9p &&     echo 'case $1 in prereqs) exit 0;; esac' >> /etc/initramfs-tools/scripts/boot-9p &&     echo '. /scripts/functions' >> /etc/initramfs-tools/scripts/boot-9p &&     echo 'mkdir -p ${rootmnt}' >> /etc/initramfs-tools/scripts/boot-9p &&     echo 'mount -n -t 9p -o trans=virtio,version=9p2000.L,cache=loose,rw host9p ${rootmnt}' >> /etc/initramfs-tools/scripts/boot-9p &&     chmod +x /etc/initramfs-tools/scripts/boot-9p
+#19 DONE 0.3s
+
+#20 [16/21] RUN echo 'BOOT=boot-9p' | tee -a /etc/initramfs-tools/initramfs.conf
+#20 0.250 BOOT=boot-9p
+#20 DONE 0.3s
+
+#21 [17/21] RUN update-initramfs -u
+#21 0.793 update-initramfs: Generating /boot/initrd.img-6.1.0-43-686
+#21 0.804 W: No zstd in /usr/bin:/sbin:/bin, using gzip
+#21 7.685 I: The initramfs will attempt to resume from /dev/dm-2
+#21 7.685 I: Set the RESUME variable to override this.
+#21 DONE 11.7s
+
+#22 [18/21] RUN echo '/opt/netbeans/bin/netbeans & \n(sleep 5 && echo -e "\n\nGUI_READY\n" > /dev/ttyS0) & \nexec fluxbox' > /root/.xinitrc
+#22 DONE 0.2s
+
+#23 [19/21] RUN {     echo 'if [ -z "$DISPLAY" ]; then';     echo '  echo "127.0.0.1 localhost" > /etc/hosts';     echo '  echo "localhost" > /etc/hostname';     echo '  hostname localhost';     echo '  startx -- -ac';     echo 'fi'; } >> /root/.bashrc
+#23 DONE 0.3s
+
+#24 [20/21] RUN mkdir -p /etc/X11/xorg.conf.d &&     echo 'Section "Device"\n    Identifier "Card0"\n    Driver "fbdev"\nEndSection' > /etc/X11/xorg.conf.d/10-fbdev.conf
+#24 DONE 0.2s
+
+#25 [21/21] WORKDIR /root
+#25 DONE 0.1s
+
+#26 exporting to image
+#26 exporting layers
+#26 exporting layers 2.4s done
+#26 writing image sha256:0e419547c11f0fa99e8636883a6f0fcac266d4093f4a6ee41296777f37f2cf81 done
+#26 naming to docker.io/local/debian-netbeans-v86 0.0s done
+#26 DONE 2.5s
+
+View build details: docker-desktop://dashboard/build/default/default/dpizz1la7a1o8z2dqhv8eisix
